@@ -49,9 +49,11 @@ class PredictPriceNN(object):
         self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batchsize, verbose=1) #########
 
 
-    def make_predict_dataset(self, plot=False):
+    def make_predict_dataset(self, plot=False, model="LSTM", epochs=2, batchsize=64):
         self.clean_data()
-        self.LSTM_model()
+
+        if model == "LSTM":
+            self.LSTM_model(epochs, batchsize)
 
         x_input = self.df[-self.time_step:].reshape(1, -1)
         temp_input = x_input[0].tolist()

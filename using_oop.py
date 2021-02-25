@@ -46,7 +46,7 @@ class PredictPriceNN(object):
         self.model.add(Dense(1))
         self.model.compile(loss='mean_squared_error', optimizer='adam')
 
-        self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batchsize, verbose=1) #########
+        self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batchsize, verbose=1)
 
 
     def make_predict_dataset(self, plot=False, model="LSTM", epochs=2, batchsize=64):

@@ -1,6 +1,5 @@
 import pandas as pd
 import pandas_datareader as wb
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import seaborn as sns
 import numpy as np
@@ -16,16 +15,19 @@ sns.set_style("darkgrid")
 class PredictPriceNN(object):
 
     def __init__(self, ticker):
+        """
+
+        :param ticker: enter the ticker symbol of the stock
+        """
         self.ticker= ticker
         self.df = pd.DataFrame()
         self.df = wb.DataReader(self.ticker, data_source='yahoo', start='2011-1-1')['Adj Close']
         self.df = self.df.to_frame()
         self.df = self.df.reset_index()
+        self.df = self.df.iloc[:-240]
         self.full_df = self.df
         self.full_df_w_date = self.df
-        # print(self.full_df_w_date)
         self.df.drop(['Date'], axis=1, inplace=True)
-        # print(self.full_df_w_date)
 
     def scale_data(self):
         """
@@ -56,12 +58,12 @@ class PredictPriceNN(object):
         :return:
         """
         self.scale_data()
-        self.time_step = 10
+        self.time_step = 40
         self.X_train, self.y_train = self.make_data(self.df[:])
         self.X_train = self.X_train.reshape(self.X_train.shape[0], self.X_train.shape[1], 1)
 
 
-    def LSTM_model(self, epochs=5, batchsize=64):
+    def LSTM_model(self, epochs=1, batchsize=64):
         """
         Tensorflow LSTM model
         :param epochs: epochs for model to train
@@ -78,7 +80,7 @@ class PredictPriceNN(object):
         self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batchsize, verbose=1)
 
 
-    def make_predict_dataset(self, plot=False, model="LSTM", epochs=1, batchsize=64, predict_no_yrs = 1):
+    def make_predict_dataset(self, plot=False, model="LSTM", epochs=5, batchsize=64, predict_no_yrs = 1):
         """
 
         :param plot: True if Plot
@@ -118,8 +120,6 @@ class PredictPriceNN(object):
                 i = i + 1
 
         stock_price = self.scaler.inverse_transform(lst_output)[0][0]
-        # return self.scaler.inverse_transform(lst_output)
-
         # if plot:
         #     day_new = np.arange(1, self.time_step + 1)
         #     day_pred = np.arange(self.time_step + 1, self.time_step + self.predict_further + 1)
@@ -136,14 +136,14 @@ class PredictPriceNN(object):
         #     plt.tight_layout()
         #     plt.show()
 
-
         if plot:
             start_date = (datetime.now()) - relativedelta(years=5)
             self.start_input = "{0}-{1}-{2}".format(start_date.year, start_date.month, start_date.day)
             end_date = datetime.now() - relativedelta(years=1)
             self.end_input = "{0}-{1}-{2}".format(end_date.year, end_date.month, end_date.day)
 
-            stock_price_data = wb.DataReader(self.ticker, data_source='yahoo', start=self.start_input, end=self.end_input)[
+            stock_price_data = \
+            wb.DataReader(self.ticker, data_source='yahoo', start=self.start_input, end=self.end_input)[
                 'Adj Close']
             stock_price_data = stock_price_data.to_frame()
             stock_price_data = stock_price_data.reset_index()
@@ -165,10 +165,11 @@ class PredictPriceNN(object):
             plt.show()
 
 
+
 if __name__ == '__main__':
 
     t = PredictPriceNN("ITC.NS")
-    print(t.make_predict_dataset(plot=True))
+    print(t.make_predict_dataset(plot=True, predict_no_yrs=1))
 
 
 

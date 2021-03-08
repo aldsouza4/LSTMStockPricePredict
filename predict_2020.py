@@ -80,7 +80,7 @@ class PredictPriceNN(object):
         self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batchsize, verbose=1)
 
 
-    def make_predict_dataset(self, plot=False, model="LSTM", epochs=5, batchsize=64, predict_no_yrs = 1):
+    def make_predict_dataset(self, plot=False, model="LSTM", epochs=5, batchsize=64, predict_no_yrs = 1, plot_with_date = False):
         """
 
         :param plot: True if Plot
@@ -120,23 +120,24 @@ class PredictPriceNN(object):
                 i = i + 1
 
         stock_price = self.scaler.inverse_transform(lst_output)[0][0]
-        # if plot:
-        #     day_new = np.arange(1, self.time_step + 1)
-        #     day_pred = np.arange(self.time_step + 1, self.time_step + self.predict_further + 1)
-        #
-        #     plt.figure(figsize=(15, 8))
-        #     plt.xlabel('Date', fontsize=14)
-        #     plt.ylabel('Price', fontsize=14)
-        #     plt.title("{}".format(self.ticker), fontsize=18)
-        #
-        #     sns.lineplot(x= day_new, y=self.scaler.inverse_transform(self.df[-self.time_step:]).flatten().tolist())
-        #     sns.lineplot(x=day_pred, y=self.scaler.inverse_transform(lst_output).flatten().tolist())
-        #     sns.lineplot(x=[self.time_step, self.time_step+1], y= [self.full_df.iloc[-1]['Adj Close'], self.scaler.inverse_transform(lst_output)[0][0]])
-        #
-        #     plt.tight_layout()
-        #     plt.show()
 
         if plot:
+            day_new = np.arange(1, self.time_step + 1)
+            day_pred = np.arange(self.time_step + 1, self.time_step + self.predict_further + 1)
+
+            plt.figure(figsize=(15, 8))
+            plt.xlabel('Date', fontsize=14)
+            plt.ylabel('Price', fontsize=14)
+            plt.title("{}".format(self.ticker), fontsize=18)
+
+            sns.lineplot(x= day_new, y=self.scaler.inverse_transform(self.df[-self.time_step:]).flatten().tolist())
+            sns.lineplot(x=day_pred, y=self.scaler.inverse_transform(lst_output).flatten().tolist())
+            sns.lineplot(x=[self.time_step, self.time_step+1], y= [self.full_df.iloc[-1]['Adj Close'], self.scaler.inverse_transform(lst_output)[0][0]])
+
+            plt.tight_layout()
+            plt.show()
+
+        elif plot_with_date:
             start_date = (datetime.now()) - relativedelta(years=5)
             self.start_input = "{0}-{1}-{2}".format(start_date.year, start_date.month, start_date.day)
             end_date = datetime.now() - relativedelta(years=1)
@@ -164,7 +165,7 @@ class PredictPriceNN(object):
             plt.legend(labels=["Expectation", 'Declared'])
             plt.show()
 
-
+        return self.scaler.inverse_transform(lst_output)[0][0]
 
 if __name__ == '__main__':
 

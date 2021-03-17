@@ -56,7 +56,7 @@ class PredictPriceNN(object):
         :return:
         """
         self.scale_data()
-        self.time_step = 10
+        self.time_step = 240
         self.X_train, self.y_train = self.make_data(self.df[:])
         self.X_train = self.X_train.reshape(self.X_train.shape[0], self.X_train.shape[1], 1)
 
@@ -126,7 +126,7 @@ class PredictPriceNN(object):
             plt.figure(figsize=(10, 8))
             plt.xlabel('Date', fontsize=14)
             plt.ylabel('Price', fontsize=14)
-            plt.title("{}".format(self.ticker), fontsize=18)
+            plt.title("{} DL - LSTM".format(self.ticker), fontsize=18)
 
             sns.lineplot(x= day_new, y=self.scaler.inverse_transform(self.df[-self.time_step:]).flatten().tolist())
             sns.lineplot(x=day_pred, y=self.scaler.inverse_transform(lst_output).flatten().tolist())
@@ -156,7 +156,7 @@ class PredictPriceNN(object):
             sns.set_style("darkgrid")
             plt.xlabel('Date', fontsize=14)
             plt.ylabel('Price', fontsize=14)
-            plt.title("{}".format(self.ticker), fontsize=18)
+            plt.title("{} DL - LSTM".format(self.ticker), fontsize=18)
             plt.tight_layout()
             plt.plot_date(x=predict_data['Date'], y=predict_data['Adj Close'], linestyle='solid', marker=None)
             plt.plot_date(x=stock_price_data['Date'], y=stock_price_data['Adj Close'], linestyle='solid', marker=None)
@@ -169,8 +169,7 @@ class PredictPriceNN(object):
 if __name__ == '__main__':
 
     t = PredictPriceNN("ITC.NS")
-    print(t.make_predict_dataset(plot=True))
-
+    t.make_predict_dataset(plot=True)
 
 
 

@@ -29,6 +29,7 @@ class PredictPriceNN(object):
         self.full_df = self.df
         self.full_df_w_date = self.df
         self.df.drop(['Date'], axis=1, inplace=True)
+        # print(self.df)
 
     def scale_data(self):
         """
@@ -59,11 +60,11 @@ class PredictPriceNN(object):
         :return:
         """
         self.scale_data()
-        self.time_step = 240
+        self.time_step = 20
         self.X_train, self.y_train = self.make_data(self.df[:])
         self.X_train = self.X_train.reshape(self.X_train.shape[0], self.X_train.shape[1], 1)
 
-    def LSTM_model(self, epochs=5, batchsize=64):
+    def LSTM_model(self, epochs=1, batchsize=128):
         """
         Tensorflow LSTM model
         :param epochs: epochs for model to train
@@ -79,10 +80,11 @@ class PredictPriceNN(object):
 
         self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batchsize, verbose=1)
 
-    def make_predict_dataset(self, plot=False, model="LSTM", epochs=5, batchsize=64, predict_no_yrs=1,
+    def make_predict_dataset(self, plot=False, model="LSTM", epochs=1, batchsize=128, predict_no_yrs=1,
                              plot_with_date=False):
         """
 
+        :param plot_with_date:
         :param plot: True if Plot
         :param model: input model to be used
         :param epochs: epochs for model to train
@@ -170,5 +172,5 @@ class PredictPriceNN(object):
 
 
 if __name__ == '__main__':
-    t = PredictPriceNN("itc.NS")
-    print(t.make_predict_dataset(plot=True))
+    t = PredictPriceNN("wipro.NS")
+    print(t.make_predict_dataset(plot_with_date=True))

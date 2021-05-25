@@ -56,7 +56,7 @@ class PredictPriceNN(object):
         :return:
         """
         self.scale_data()
-        self.time_step = 240
+        self.time_step = 20
         self.X_train, self.y_train = self.make_data(self.df[:])
         self.X_train = self.X_train.reshape(self.X_train.shape[0], self.X_train.shape[1], 1)
 
@@ -78,7 +78,7 @@ class PredictPriceNN(object):
         self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batchsize, verbose=1)
 
 
-    def make_predict_dataset(self, plot=False, model="LSTM", epochs=1, batchsize=64, predict_no_yrs = 1, plot_with_date = False):
+    def make_predict_dataset(self, plot=False, model="LSTM", epochs=1, batchsize=128, predict_no_yrs = 1, plot_with_date = False):
         """
 
         :param plot: True if Plot
@@ -139,7 +139,8 @@ class PredictPriceNN(object):
         if plot_with_date:
             start_date = (datetime.now()) - relativedelta(years=5)
             self.start_input = "{0}-{1}-{2}".format(start_date.year, start_date.month, start_date.day)
-            end_date = datetime.now() - relativedelta(years=1)
+            # end_date = datetime.now() - relativedelta(years=1)
+            end_date = datetime.now()
             self.end_input = "{0}-{1}-{2}".format(end_date.year, end_date.month, end_date.day)
 
             stock_price_data = wb.DataReader(self.ticker, data_source='yahoo', start=self.start_input, end=self.end_input)[
@@ -168,8 +169,8 @@ class PredictPriceNN(object):
 
 if __name__ == '__main__':
 
-    t = PredictPriceNN("ITC.NS")
-    t.make_predict_dataset(plot=True)
+    t = PredictPriceNN("wipro.NS")
+    t.make_predict_dataset(plot_with_date=True)
 
 
 
